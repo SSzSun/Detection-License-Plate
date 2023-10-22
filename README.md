@@ -4,6 +4,15 @@
 ```bash
 git clone https://github.com/SSzSun/Detection-License-Plate.git
 ```
+```bash
+pip install git+https://github.com/ultralytics/ultralytics.git@main
+```
+```bash
+pip install torch
+```
+```bash
+pip install onnxruntime
+```
 ------
 รายละเอียดไฟล์
 * Folder Model เก็บรายละเอียด Model ป้ายทะเบียน 
@@ -19,3 +28,8 @@ git clone https://github.com/SSzSun/Detection-License-Plate.git
 * File test.csv เป็นข้อมูลสถิติที่ตรวจพบ
 * File test_interpolated.csv เป็นไฟล์ที่ผ่านการแก้ไขหรือหลังจากทำข้อมูลใหม่
 ----
+ref
+https://www.youtube.com/watch?v=fyJB1t0o0ms
+https://github.com/MuhammadMoinFaisal/Automatic_Number_Plate_Detection_Recognition_YOLOv8/tree/main
+https://github.com/abewley/sort
+https://github.com/computervisioneng/automatic-number-plate-recognition-python-yolov8
