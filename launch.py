@@ -142,9 +142,9 @@ def process_video():
 
             root.update()
 
-            # Check if you want to break after processing a certain number of frames (e.g., 100 frames)
-            if frame_count >= 100:  # Change this number as needed
-                break
+            # # Check if you want to break after processing a certain number of frames (e.g., 100 frames)
+            # if frame_count >= 100:  # Change this number as needed
+            #     break
 
         cap.release()
         processing = False
