@@ -21,14 +21,12 @@ reader = easyocr.Reader(['th','en'], gpu=True)
 import torch
 device: str = "mps" if torch.backends.mps.is_available() else "cpu"
 
- 
-# model = YOLO("../eng_pl.pt")
+# Initialize YOLO model
 model = YOLO("model/A_500.pt")
 tracker = sv.ByteTrack()
 box_annotator = sv.BoundingBoxAnnotator()
 label_annotator = sv.LabelAnnotator()
-
-# Create the main window with an initial size of 1280x720
+# Create the main window with an initial size
 root = tk.Tk()
 root.title("Video Processing App")
 root.geometry("1320x860")  # Set the initial size
@@ -40,7 +38,7 @@ frame_height = 720
 # Video processing variables
 video_path = ""
 processing = False
-
+frame_skip = 5  # Process every 5th frame
 # Create a label on the left side to display vehicle information
 info_label = ttk.Treeview(root, columns=("ID", "Type", "License Plate"), show="headings")
 info_label.heading("ID", text="ID", anchor="w")
@@ -103,7 +101,8 @@ def process_frame(frame):
                     info[0], info[1], license_plate[0][-2]
                 ) 
         vehicle_info.append(info)
- 
+
+
     return annotated_frame, vehicle_info
 
 def process_video():
@@ -116,35 +115,31 @@ def process_video():
         processing = True
         cap = cv2.VideoCapture(video_path)
 
-        # Create a variable to keep track of the frames processed
         frame_count = 0
 
         while True:
             ret, frame = cap.read()
             if not ret:
-                break
+                cap.set(cv2.CAP_PROP_POS_FRAMES, 0)  # Reset to the beginning when the end is reached
+                continue
 
-            # Update the frame count
             frame_count += 1
+
+            if frame_count % frame_skip != 0:
+                continue  # Skip this frame
 
             annotated_frame, vehicle_info = process_frame(frame)
 
-            # Display the processed frame
             img = Image.fromarray(cv2.cvtColor(annotated_frame, cv2.COLOR_BGR2RGB))
             img = ImageTk.PhotoImage(image=img)
             label.config(image=img)
             label.image = img
 
-            # Update the vehicle information in the table
             info_label.delete(*info_label.get_children())
             for info in vehicle_info:
                 info_label.insert("", "end", values=info)
 
             root.update()
-
-            # # Check if you want to break after processing a certain number of frames (e.g., 100 frames)
-            # if frame_count >= 100:  # Change this number as needed
-            #     break
 
         cap.release()
         processing = False
@@ -187,5 +182,3 @@ thread.start()
 
 # Start the main loop
 root.mainloop()
-
-
