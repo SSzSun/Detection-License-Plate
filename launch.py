@@ -1,35 +1,34 @@
 import cv2
 import tkinter as tk
-from tkinter import filedialog
-from tkinter import messagebox
-from tkinter import ttk
-from numpy import index_exp
-from ultralytics import YOLO
-import supervision as sv
-from PIL import Image, ImageTk
-import threading
-import cv2
-import tkinter as tk
-from tkinter import filedialog
-from tkinter import ttk
+from tkinter import filedialog, messagebox, ttk
 from PIL import Image, ImageTk
 import threading
 import easyocr
+from ultralytics import YOLO
+import supervision as sv
+import torch
 
 # Initialize EasyOCR reader
 reader = easyocr.Reader(['th','en'], gpu=True)
 import torch
-device: str = "mps" if torch.backends.mps.is_available() else "cpu"
-
+# Check if CUDA (GPU) is available
 # Initialize YOLO model
-model = YOLO("model/A_500.pt")
+def sw_yolo_model(str):
+    if torch.cuda.is_available():
+        model = YOLO(str).cuda()
+        print(torch.cuda.is_available())
+    else:
+        model = YOLO(str)
+    return model
+model = sw_yolo_model("model/A_500.pt")
+
 tracker = sv.ByteTrack()
 box_annotator = sv.BoundingBoxAnnotator()
 label_annotator = sv.LabelAnnotator()
 # Create the main window with an initial size
 root = tk.Tk()
 root.title("Video Processing App")
-root.geometry("1320x860")  # Set the initial size
+root.geometry("1320x960")  # Set the initial size
 
 # Set the desired frame size to match the label's size
 frame_width = 1280
@@ -47,7 +46,7 @@ info_label.heading("License Plate", text="License Plate")
 info_label.column("ID", anchor="w")  # "ID" column will be left-aligned
 for col in ("Type", "License Plate"):
     info_label.column(col, anchor="center")  # Other columns will be center-aligned
-info_label.pack(side="bottom", padx=16)
+info_label.pack(side="bottom", padx=10)
 
 # Video processing function
 def process_frame(frame):
@@ -141,12 +140,12 @@ def process_video():
 
             root.update()
 
-        cap.release()
-        processing = False
+        # cap.release()
+        # processing = False
 
 # Add video button
 add_video_button = tk.Button(root, text="Add Video", command=process_video)
-add_video_button.pack(pady=10)
+add_video_button.pack(pady=5)
 def load_yolo_model():
     global model
     model_path = filedialog.askopenfilename(filetypes=[("YOLO Model Files", "*.pt *.weights")])
@@ -154,14 +153,14 @@ def load_yolo_model():
         model = YOLO(model_path)
 
 load_model_button = tk.Button(root, text="Load YOLO Model", command=load_yolo_model)
-load_model_button.pack(pady=10)
+load_model_button.pack(pady=5)
 # Label for displaying the processed video with a size of 548x783
 label = tk.Label(root, width=frame_width, height=frame_height)
 label.pack()
 
 # Process video button (enabled only when not processing)
 process_button = tk.Button(root, text="Process Video", command=process_video)
-process_button.pack(pady=10)
+process_button.pack(pady=5)
 process_button["state"] = "disabled"
 
 # Function to enable the process button

@@ -3,3 +3,5 @@ supervision
 opencv-python
 numpy
 easyocr
+#pip install torch torchvision torchaudio --index-url https://download.pytorch.org/whl/cu118
+#yolo detect train data=coco128.yaml model=yolov8n.pt epochs=100 imgsz=640
